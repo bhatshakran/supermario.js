@@ -28,26 +28,53 @@ loadSprite("pipe-top-right", "topright.png");
 loadSprite("pipe-bottom-left", "bottomleft.png");
 loadSprite("pipe-bottom-right", "bottomright.png");
 
+
+loadSprite("blue-block", "bluestone.png");
+loadSprite("blue-brick", "brickblue.png");
+loadSprite("blue-steel", "blueblock.png");
+loadSprite("blue-evil-shroom", "blueshroom.png");
+loadSprite("blue-surprise", "bluesurprise.png");
+
 scene("game", ({ level, score }) => {
   layers(["bg", "obj", "ui"], "obj");
 
-  const map = [
-    "                            ",
-    "                            ",
-    "                            ",
-    "                            ",
-    "                            ",
-    "                            ",
-    "                            ",
-    "                            ",
-    "                            ",
-    "                            ",
-    "                            ",
-    "     %  =*=%=               ",
-    "                            ",
-    "                      -+    ",
-    "                ^  ^  ()    ",
-    "======================== ===",
+  const maps = [
+    [
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "     %  =*=%=               ",
+      "                            ",
+      "                      -+    ",
+      "                ^  ^  ()    ",
+      "======================== ===",
+    ],
+    [
+      "£                                       $",
+      "£                                       $",
+      "£                                       $",
+      "£                                       $",
+      "£                                       $",
+      "£                                       $",
+      "£                                       $",
+      "£                                       $",
+      "£                                       $",
+      "£                                       $",
+      "£                             x         $",
+      "£     ~  !~!~!              x x x       $",
+      "£                         x x x x x     $",
+      "£                       x x x x x x   -+$",
+      "£                z  z x x x x x x x x ()$",
+      "!!!!!!!!!!!!!!!!!!!!!!!  !!!!!!!!!!!!!!!!",
+    ],
   ];
 
   const levelCfg = {
@@ -62,12 +89,17 @@ scene("game", ({ level, score }) => {
     ")": [sprite("pipe-bottom-right"), solid(), scale(0.5)],
     "-": [sprite("pipe-top-left"), solid(), scale(0.5), "pipe"],
     "+": [sprite("pipe-top-right"), solid(), scale(0.5), "pipe"],
-    "^": [sprite("evil-shroom"), solid(), "dangerous"],
+    "^": [sprite("evil-shroom"), solid(), "dangerous", body()],
     "#": [sprite("mushroom"), "mushroom", body()],
+    "!": [sprite("blue-block"), solid(), scale(0.5)],
+    "£": [sprite("blue-brick"), solid(), scale(0.5)],
+    "~": [sprite("blue-surprise"), solid(), scale(0.5)],
+    z: [sprite("blue-evil-shroom"), solid(), scale(0.5)],
+    x: [sprite("blue-steel"), solid(), scale(0.5)],
   };
 
   // game level instantiation
-  const gameLevel = addLevel(map, levelCfg);
+  const gameLevel = addLevel(maps[level], levelCfg);
 
   // score
   const scoreLabel = add([

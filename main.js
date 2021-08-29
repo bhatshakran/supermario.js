@@ -47,15 +47,15 @@ scene("game", () => {
     height: 20,
     "=": [sprite("block"), solid()],
     "@": [sprite("coin")],
-    "%": [sprite("block", solid(), "coin-surprise")],
-    "*": [sprite("surprise", solid(), "mushroom-surprise")],
-    "}": [sprite("unboxed", solid())],
-    "(": [sprite("pipe-bottom-left", solid()), scale(0.5)],
-    ")": [sprite("pipe-bottom-right", solid()), scale(0.5)],
-    "-": [sprite("pipe-top-left", solid()), scale(0.5)],
-    "+": [sprite("pipe-top-right", solid()), scale(0.5)],
-    "^": [sprite("evil-shroom", solid())],
-    "#": [sprite("mushroom", solid())],
+    "%": [sprite("block"), solid(), "coin-surprise"],
+    "*": [sprite("surprise"), solid(), "mushroom-surprise"],
+    "}": [sprite("unboxed"), solid()],
+    "(": [sprite("pipe-bottom-left"), solid(), scale(0.5)],
+    ")": [sprite("pipe-bottom-right"), solid(), scale(0.5)],
+    "-": [sprite("pipe-top-left"), solid(), scale(0.5)],
+    "+": [sprite("pipe-top-right"), solid(), scale(0.5)],
+    "^": [sprite("evil-shroom"), solid()],
+    "#": [sprite("mushroom")],
   };
 
   // game level instantiation
@@ -73,8 +73,51 @@ scene("game", () => {
 
   add([text("level" + "test", pos(4, 6))]);
 
+  // Function big
+  function big() {
+    let timer = 0;
+    let isBig = false;
+    return {
+      update() {
+        if (isBig) {
+          timer -= dt();
+          if (timer <= 0) {
+            this.smallify();
+          }
+        }
+      },
+      isBig() {
+        return isBig;
+      },
+      smallify() {
+        this.scale = vec2(1);
+        timer = 0;
+        isBig = false;
+      },
+      biggify(time) {
+        this.scale = vec2(2);
+        timer = time;
+        isBig = true;
+      },
+    };
+  }
+
   // player instantiation
-  const player = add([sprite("mario"), pos(30, 0), origin("bot"), body()]);
+  const player = add([
+    sprite("mario"),
+    pos(30, 0),
+    origin("bot"),
+    body(),
+    big(),
+  ]);
+
+  // On unsprised box headbump
+  player.on("headbump", (obj) => {
+    if (obj.is("coin-surprise")) {
+      gameLevel.spawn("@", obj.gridPos.sub(0, 1));
+      destroy(obj);
+    }
+  });
 
   // Player movement
 

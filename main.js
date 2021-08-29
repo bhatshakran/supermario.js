@@ -1,9 +1,9 @@
 kaboom({
   global: true,
-  fullscreen: true,
+  // fullscreen: true,
   scale: 1,
-  width: 2000,
-  height: 3000,
+  width: 1000,
+  height: 500,
   debug: true,
   clearColor: [0, 0, 0, 1],
 });
@@ -15,7 +15,7 @@ loadSprite("brick", "brick.png");
 loadSprite("block", "stone.png");
 loadSprite("mario", "mario.png");
 loadSprite("mushroom", "mushroom.png");
-loadSprite("surpise", "surprisebox.png");
+loadSprite("surprise", "surprisebox.png");
 loadSprite("unboxed", "openedbox.png");
 loadSprite("pipe-top-left", "topleft.png");
 loadSprite("pipe-top-right", "topright.png");
@@ -35,6 +35,12 @@ scene("game", () => {
     "                            ",
     "                            ",
     "                            ",
+    "                            ",
+    "                            ",
+    "     %  =*=%=               ",
+    "                            ",
+    "                      -+    ",
+    "                ^  ^  ()    ",
     "======================== ===",
   ];
 
@@ -42,6 +48,14 @@ scene("game", () => {
     width: 20,
     height: 20,
     "=": [sprite("block", solid())],
+    "@": [sprite("coin")],
+    "%": [sprite("block", solid(), "coin-surprise")],
+    "*": [sprite("surprise", solid(), "mushroom-surprise")],
+    "}": [sprite("unboxed", solid())],
+    "(": [sprite("pipe-bottom-left", solid()), scale(0.5)],
+    ")": [sprite("pipe-bottom-right", solid()), scale(0.5)],
+    "-": [sprite("pipe-top-left", solid()), scale(0.5)],
+    "+": [sprite("pipe-top-right", solid()), scale(0.5)],
   };
 
   const gameLevel = addLevel(map, levelCfg);

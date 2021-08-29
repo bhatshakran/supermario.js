@@ -10,6 +10,9 @@ const MOVE_SPEED = 120;
 const JUMP_FORCE = 360;
 const BIG_JUMP_FORCE = 550;
 let CURRENT_JUMP_FORCE = JUMP_FORCE;
+const ENEMY_SPEED = 20;
+let IS_JUMPING = true;
+const FALL_DEATH = 400;
 
 loadRoot("./pics/");
 loadSprite("coin", "coin.png");
@@ -25,7 +28,7 @@ loadSprite("pipe-top-right", "topright.png");
 loadSprite("pipe-bottom-left", "bottomleft.png");
 loadSprite("pipe-bottom-right", "bottomright.png");
 
-scene("game", () => {
+scene("game", ({ level, score }) => {
   layers(["bg", "obj", "ui"], "obj");
 
   const map = [
@@ -57,9 +60,9 @@ scene("game", () => {
     "}": [sprite("unboxed"), solid()],
     "(": [sprite("pipe-bottom-left"), solid(), scale(0.5)],
     ")": [sprite("pipe-bottom-right"), solid(), scale(0.5)],
-    "-": [sprite("pipe-top-left"), solid(), scale(0.5)],
-    "+": [sprite("pipe-top-right"), solid(), scale(0.5)],
-    "^": [sprite("evil-shroom"), solid()],
+    "-": [sprite("pipe-top-left"), solid(), scale(0.5), "pipe"],
+    "+": [sprite("pipe-top-right"), solid(), scale(0.5), "pipe"],
+    "^": [sprite("evil-shroom"), solid(), "dangerous"],
     "#": [sprite("mushroom"), "mushroom", body()],
   };
 
@@ -68,15 +71,15 @@ scene("game", () => {
 
   // score
   const scoreLabel = add([
-    text("score"),
+    text(score),
     pos(30, 6),
     layer("ui"),
     {
-      value: "score",
+      value: score,
     },
   ]);
 
-  add([text("level" + "test", pos(4, 6))]);
+  add([text("level" + parseInt(level + 1)), pos(40, 6)]);
 
   // Function big
   function big() {
@@ -124,6 +127,11 @@ scene("game", () => {
     m.move(10, 0);
   });
 
+  // Shroom motion
+  action("dangerous", (d) => {
+    d.move(-ENEMY_SPEED, 0);
+  });
+
   // On unsprised box headbump
   player.on("headbump", (obj) => {
     if (obj.is("coin-surprise")) {
@@ -151,6 +159,33 @@ scene("game", () => {
     scoreLabel.text = scoreLabel.value;
   });
 
+  // If player collides with a shroom
+  player.collides("dangerous", (d) => {
+    if (IS_JUMPING) {
+      destroy(d);
+    } else {
+      go("lose", { score: scoreLabel.value });
+    }
+  });
+
+  // Camera position
+  player.action(() => {
+    camPos(player.pos);
+    if (player.pos.y >= FALL_DEATH) {
+      go("lose", { score: scoreLabel.value });
+    }
+  });
+
+  // Go down in the pipe
+  player.collides("pipe", () => {
+    keyPress("down", () => {
+      go("game", {
+        level: level + 1,
+        score: scoreLabel.value,
+      });
+    });
+  });
+
   // Player movement
 
   keyDown("right", () => {
@@ -161,9 +196,21 @@ scene("game", () => {
   });
   keyPress("space", () => {
     if (player.grounded()) {
+      IS_JUMPING = true;
       player.jump(CURRENT_JUMP_FORCE);
+    }
+  });
+
+  player.action(() => {
+    if (player.grounded()) {
+      IS_JUMPING = false;
     }
   });
 });
 
-start("game");
+// Lose scene
+scene("lose", ({ score }) => {
+  add([text(score, 32), origin("center"), pos(width() / 2, height() / 2)]);
+});
+
+start("game", { level: 0, score: 0 });

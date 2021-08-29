@@ -1,9 +1,7 @@
 kaboom({
   global: true,
-  // fullscreen: true,
+  fullscreen: true,
   scale: 1,
-  width: 1000,
-  height: 500,
   debug: true,
   clearColor: [0, 0, 0, 1],
 });
@@ -47,7 +45,7 @@ scene("game", () => {
   const levelCfg = {
     width: 20,
     height: 20,
-    "=": [sprite("block", solid())],
+    "=": [sprite("block"), solid()],
     "@": [sprite("coin")],
     "%": [sprite("block", solid(), "coin-surprise")],
     "*": [sprite("surprise", solid(), "mushroom-surprise")],
@@ -56,9 +54,12 @@ scene("game", () => {
     ")": [sprite("pipe-bottom-right", solid()), scale(0.5)],
     "-": [sprite("pipe-top-left", solid()), scale(0.5)],
     "+": [sprite("pipe-top-right", solid()), scale(0.5)],
+    "^": [sprite("evil-shroom", solid())],
+    "#": [sprite("mushroom", solid())],
   };
 
   const gameLevel = addLevel(map, levelCfg);
+  const player = add([sprite("mario"), pos(30, 0), origin("bot"), body()]);
 });
 
-go("game");
+start("game");
